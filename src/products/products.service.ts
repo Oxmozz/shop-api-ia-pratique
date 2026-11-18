@@ -57,4 +57,21 @@ export class ProductsService {
       where: { stock: { gt: 0 } },
     });
   }
+
+  async search(q?: string) {
+    const term = q?.trim();
+
+    if (!term) {
+      return this.findAll();
+    }
+
+    const products = await this.prisma.product.findMany({
+      orderBy: { createdAt: "desc" },
+    });
+    const normalizedTerm = term.toLowerCase();
+
+    return products.filter((product) =>
+      product.name.toLowerCase().includes(normalizedTerm),
+    );
+  }
 }
